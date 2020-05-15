@@ -33,8 +33,8 @@ class SetupCreateFile():
 			panel = self.driver.find_elements_by_class_name("label")[3].text
 			pnl_1 = "".join(panel.split("|")[0].split("-")[-1:])
 			pnl_1 = pnl_1 if len(pnl_1) == 1 else pnl_1[-1:]
-			pnl_2 = "".join(panel.split("|")[1].split("-")[-1:])
-			pnl_2 = pnl_2 if len(pnl_2) == 1 else pnl_2[-1:]
+			# pnl_2 = "".join(panel.split("|")[1].split("-")[-1:])
+			# pnl_2 = pnl_2 if len(pnl_2) == 1 else pnl_2[-1:]
 			if pnl_1 == self.panel:
 				panel = panel.split("|")[0]
 				if rn_port == panel:
@@ -61,12 +61,15 @@ class SetupCreateFile():
 			fl_panel_even 	= self.driver.find_elements_by_css_selector("tr.even td")[0].text
 			if "-".join(fl_panel_odd.split("-")[:-1])[-1:] == self.panel:
 				rn_port = "-".join(fl_panel_odd.split("-")[:-1])
+				lt_port = "".join(fl_panel_odd.split("-")[-1:])
 			else:
 				rn_port = "-".join(fl_panel_even.split("-")[:-1])
+				lt_port = "".join(fl_panel_even.split("-")[-1:])
 			rn_panl = self.select_panel(kap, rn_port)
 			result = {
 				'rn_port': rn_port,
-				'rn_panl': rn_panl
+				'rn_panl': rn_panl,
+				'lt_port': lt_port
 			}
 			return result
 		if self.panel == '2':
@@ -74,12 +77,15 @@ class SetupCreateFile():
 			fl_panel_even 	= self.driver.find_elements_by_css_selector("tr.even td")[0].text
 			if "-".join(fl_panel_even.split("-")[:-1])[-1:] == self.panel:
 				rn_port = "-".join(fl_panel_even.split("-")[:-1])
+				lt_port = "".join(fl_panel_even.split("-")[-1:])
 			else:
 				rn_port = "-".join(fl_panel_odd.split("-")[:-1])
+				lt_port = "".join(fl_panel_odd.split("-")[-1:])
 			rn_panl = self.select_panel(kap, rn_port)
 			result = {
 				'rn_port': rn_port,
-				'rn_panl': rn_panl
+				'rn_panl': rn_panl,
+				'lt_port': lt_port
 			}
 			return result
 
@@ -98,11 +104,12 @@ class SetupCreateFile():
 		sfx_name = datetime.now().strftime("%Y%m%d%H%M%S")
 		filename = f"UPDATE_STP_IMMEDIATE_{sfx_name}.csv"
 		pathfile = os.getcwd()+'\\app\\output\\'+filename
+		lt_port = port if len(panel_port['lt_port']) == 1 else f"0{port}"
 		with open(pathfile, 'w', newline='') as file:
 			thewriter = csv.writer(file, delimiter='|')
 			thewriter.writerow(['SERVICE_NAME','SERVICE_NUMBER','ODP_PANEL','PORT_NAME'])
 			chk_service = f'0{service}' if service[0] == '3' else service
-			thewriter.writerow([f'{fl_service}',f'{chk_service}',f'{panel_port["rn_panl"]}',f'{panel_port["rn_port"]}-{port}'])
+			thewriter.writerow([f'{fl_service}',f'{chk_service}',f'{panel_port["rn_panl"]}',f'{panel_port["rn_port"]}-{lt_port}'])
 		time.sleep(6)
 		pathfile = os.getcwd()+'\\app\\output\\'+filename
 		self.driver.get(os.getenv('UPLOAD_LINK'))
